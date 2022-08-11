@@ -6,11 +6,11 @@ import pickle
 import zipfile
 
 # replace with where you want to save the resulting sections list
-folder_to_save_list_of_sections = '/glusterfs/dfs-gfs-dist/milichma/create_filtered_meaningful_fraction_of_wikipedia/final_datasets/nnn'
+folder_to_save_list_of_sections = ''
 
 # first you need to download the kensho file. Go to https://www.kaggle.com/datasets/kenshoresearch/kensho-derived-wikimedia-data and get the 'link_annotated_text.jsonl'
 # replace the path with the path to the file on your system
-path_to_kensho_jsonl = '/glusterfs/dfs-gfs-dist/milichma/kensho_wikimedia/link_annotated_text.jsonl'
+path_to_kensho_jsonl = ''
 
 # first we get all the wikipedia ids in the test datasets
 print('Get ids from test data')
@@ -128,8 +128,7 @@ for index in random_order:
                 if count >= threshold or count >= test_entities_and_count[wiki_id]:
                     if wiki_id in entities_not_covered_enough_times_yet:
                         entities_not_covered_enough_times_yet.remove(wiki_id)
-
-            print(f'{(1-(len(entities_not_covered_enough_times_yet)/len(set_of_all_ids_in_test))) * 100:2f}% of test ids covered')
+                        print(f'{(1-(len(entities_not_covered_enough_times_yet)/len(set_of_all_ids_in_test))) * 100:.2f}% of test ids covered')
             break
 
 with open(folder_to_save_list_of_sections + 'list_of_sections.pickle', 'wb') as handle:
