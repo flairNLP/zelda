@@ -4,6 +4,7 @@ import json
 import random
 import pickle
 import zipfile
+import time
 
 random.seed(11) # must be set to 11
 
@@ -26,7 +27,7 @@ for conll_file in test_folder.iterdir():
             if line_list[1].startswith('B-'):
                 set_of_all_ids_in_test.add(int(line_list[1][2:]))
 
-# TODO: print how many ids
+print(f'Test sets conatin {len(set_of_all_ids_in_test)} ids in total.')
 
 # second open the kensho wikimedia file and create a list of sections
 print('Create list of sections')
@@ -50,7 +51,7 @@ with open(path_to_kensho_jsonl, mode='r', encoding='utf-8') as read:
 
         line = read.readline()
 
-# TODO: print how many sections loaded
+print(f'Loaded {len(list_of_sections)} sections.')
 
 print('Load id-titles dictionary')
 # we also need the id to titles dictionary
@@ -60,7 +61,9 @@ with zipfile.ZipFile(zip_folder / 'kensho_ids_to_titles.zip', 'r') as zip_ref:
 with open(zip_folder / 'dictionary_of_all_wikiids_and_pagenames.pickle', 'rb') as handle:
     kensho_dict_id_to_title = pickle.load(handle)
 
-# TODO: print to confirm that dictionary loaded
+print('Done.')
+print('Create the list of sections...')
+time.sleep(5)
 
 # now, depending on the threshold, we sample sections from the list until each test entity is covered at least threshold times (if possible)
 threshold = 10
@@ -71,7 +74,7 @@ entities_not_covered_enough_times_yet = set_of_all_ids_in_test.copy()  # start w
 
 remaining_sections_list = []
 
-# randomly shuffle the sections
+# randomly shuffle the sections, so that sections are not processed article by article, but in a total random fashion
 random_order = random.sample(range(len(list_of_sections)), len(list_of_sections)) # randomly shuffle the sections
 
 for index in random_order:
@@ -104,7 +107,9 @@ for index in random_order:
 
             for i in range(len(link_titles)):
 
-                # TODO: comment to explain this
+                # some wikipedia ids do not return a response when doing a call to the wikimedia api (probably outdated ids)
+                # the dictionary contains a 'O' instead of the title for those ids, we do not consider them
+                # this concerns only a tiny subset of all the ids
                 if link_titles[i] != 'O':
                     new_link_lengths.append(section['link_lengths'][i])
                     new_link_offsets.append(section['link_offsets'][i])
@@ -137,7 +142,8 @@ for index in random_order:
                         print(
                             f'{(1 - (len(entities_not_covered_enough_times_yet) / len(set_of_all_ids_in_test))) * 100:.2f}% of test ids covered')
 
-            # TODO: comment to explain this :D
+            # we added the section and updated the counts and sets
+            # thus we can continue with the next section
             break
 
 with open(folder_to_save_list_of_sections + 'list_of_sections.pickle', 'wb') as handle:
