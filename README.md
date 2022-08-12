@@ -9,3 +9,7 @@ referenced page.
 The test corpora are the test split of the [AIDA CoNLL-YAGO](https://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/ambiverse-nlu/aida/downloads) dataset (AIDA-b), 
 the [Reddit EL corpus](https://doi.org/10.5281/zenodo.3970806), the [Tweeki EL corpus](https://ucinlp.github.io/tweeki/), the [ShadowLink dataset](https://huggingface.co/datasets/vera-pro/ShadowLink) and 
 the [WNED-WIKI/WNED-CWEB](https://github.com/lephong/mulrel-nel) corpora processed by [Le and Titov, 2018](https://aclanthology.org/P18-1148/).
+
+TODOs: 
+- Skript zur Erzeugung von "kensho_ids_to_titles" 
+- Skripte zur Erzeugung der Testdatensätze + Erklärung wo downloaden
