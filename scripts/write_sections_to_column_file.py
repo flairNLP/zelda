@@ -76,7 +76,7 @@ for section in list_of_sections:
     for token in sentence:
         label = token.get_label('nel').value
         if label == '':  # no entity
-            write.write(token.text + '\tO\n')
+            write.write(token.text + '\tO\tO\n')
         else:
             write.write(token.text + '\t' + label + '\n')
 
