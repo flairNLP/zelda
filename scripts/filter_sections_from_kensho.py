@@ -5,6 +5,8 @@ import random
 import pickle
 import zipfile
 
+random.seed(11) # must be set to 11
+
 # replace with where you want to save the resulting sections list
 folder_to_save_list_of_sections = ''
 
@@ -70,8 +72,7 @@ entities_not_covered_enough_times_yet = set_of_all_ids_in_test.copy()  # start w
 remaining_sections_list = []
 
 # randomly shuffle the sections
-random.seed(11)
-random_order = random.sample(range(len(list_of_sections)), len(list_of_sections))  # randomly shuffle the sections
+random_order = random.sample(range(len(list_of_sections)), len(list_of_sections)) # randomly shuffle the sections
 
 for index in random_order:
 
