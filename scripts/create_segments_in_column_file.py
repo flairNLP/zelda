@@ -8,8 +8,8 @@ from math import inf
 min_segment_length = 400
 
 # replace with the file you want to segment
-input_file = '/glusterfs/dfs-gfs-dist/milichma/create_filtered_meaningful_fraction_of_wikipedia/final_datasets/train/sections.conll'
-output_file = '/glusterfs/dfs-gfs-dist/milichma/create_filtered_meaningful_fraction_of_wikipedia/final_datasets/dasdasas'
+input_file = ''
+output_file = ''
 
 # statistics for input file
 avg = 0

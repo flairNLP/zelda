@@ -24,6 +24,8 @@ for conll_file in test_folder.iterdir():
     with open(conll_file, mode='r', encoding='utf-8') as input_file:
         for line in input_file:
             line_list = line.split('\t')
+            if len(line_list) == 1:
+                continue
             if line_list[1].startswith('B-'):
                 set_of_all_ids_in_test.add(int(line_list[1][2:]))
 
