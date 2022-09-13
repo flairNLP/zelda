@@ -127,7 +127,7 @@ for index in random_order:
             new_section['target_page_ids'] = new_target_page_ids
             new_section['target_page_titles'] = new_target_page_titles
 
-            remaining_sections_list.append(section)
+            remaining_sections_list.append(new_section)
 
             # update count
             for wiki_id in target_page_ids:
