@@ -75,7 +75,7 @@ for section in list_of_sections:
     # WRITE EACH SECTION TO FILE
     for token in sentence:
         label = token.get_label('nel').value
-        if label == '':  # no entity
+        if label == 'O':  # no entity
             write.write(token.text + '\tO\tO\n')
         else:
             write.write(token.text + '\t' + label + '\n')

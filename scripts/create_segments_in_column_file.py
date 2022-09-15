@@ -60,7 +60,8 @@ f_in = open(input_file, mode='r', encoding='utf-8')
 if output_file:
     f_out = open(output_file, mode='w', encoding='utf-8')
 else:
-    f_out = open(input_file + f'_min-seg-length={min_segment_length}', mode='w', encoding='utf-8')
+    output_file = input_file + f'_min-seg-length={min_segment_length}'
+    f_out = open(output_file, mode='w', encoding='utf-8')
 
 line = f_in.readline()
 current_length = 0
@@ -110,7 +111,7 @@ number_segments = 0
 min=inf
 max=0
 
-with open(input_file + f'_min-seg-length={min_segment_length}' , mode = 'r', encoding='utf-8') as column_file:
+with open(output_file , mode = 'r', encoding='utf-8') as column_file:
 
     line = column_file.readline()
     sentence_list = []
