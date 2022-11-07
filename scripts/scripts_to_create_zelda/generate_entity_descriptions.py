@@ -10,10 +10,6 @@ import json
 import os
 from flair.tokenization import SpacySentenceSplitter, SpacyTokenizer
 
-
-
-
-
 # get all relevant entity titles
 def generate_entity_descriptions(PATH_TO_REPOSITORY, PATH_TO_KENSHO_JSONL):
     print('Generate entity descriptions...')
@@ -54,8 +50,13 @@ def generate_entity_descriptions(PATH_TO_REPOSITORY, PATH_TO_KENSHO_JSONL):
                 else:
                     no_introduction+=1
                     page = wiki_wiki.page(title)
-                    text = page.summary
+                    try:
+                        text = page.summary
+                    except:
+                        print(f'Bad wikipedia call for title: {title}. Save empty entity description.')
+                        text = ''
 
+                text = text[:1200]
                 sentences = sentence_splitter.split(text)
                 entity_description = sentences[0].to_original_text()
 
@@ -69,19 +70,5 @@ def generate_entity_descriptions(PATH_TO_REPOSITORY, PATH_TO_KENSHO_JSONL):
 
                     print(f'Introduction={counter - no_introduction}, NO Introduction = {no_introduction}')
 
-        # handle the remaining entities (that do not have a corresponding page in kensho)
-        print(len(set_of_entity_ids_in_zelda))
-        for page_id in set_of_entity_ids_in_zelda:
-            title = zelda_ids_to_titles[page_id]
-            page = wiki_wiki.page(title)
-            text = page.summary
-
-            sentences = sentence_splitter.split(text)
-            entity_description = sentences[0].to_original_text()
-
-            outpt_dict = {'wikipedia_id': page_id, 'wikipedia_title': title, 'description': entity_description}
-            json.dump(outpt_dict, output_jsonl)
-            output_jsonl.write('\n')
-
-generate_entity_descriptions(PATH_TO_REPOSITORY='C:\\Users\\Marcel\\Desktop\\Arbeit\\Task\\Entitiy_Linking\\my_dataset_repo\\ED_Dataset',
-                             PATH_TO_KENSHO_JSONL='C:\\Users\\Marcel\\Desktop\\tmp_arbeit\\ddddd\\link_annotated_text.jsonl')
+# generate_entity_descriptions(PATH_TO_REPOSITORY='C:\\Users\\Marcel\\Desktop\\Arbeit\\Task\\Entitiy_Linking\\my_dataset_repo\\ED_Dataset',
+#                              PATH_TO_KENSHO_JSONL='C:\\Users\\Marcel\\Desktop\\tmp_arbeit\\ddddd\\link_annotated_text.jsonl')

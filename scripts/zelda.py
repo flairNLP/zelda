@@ -7,6 +7,7 @@ PATH_TO_REPOSITORY = 'C:\\Users\\Marcel\\Desktop\\Arbeit\\Task\\Entitiy_Linking\
 
 # If you want a conll version of ZELDA-train, set this to true
 create_conll_version_of_zelda_train = True
+# If you want to generate the entity descriptions, set this to true
 create_entity_descriptions = True
 
 # all files will be stored in repo/train_data

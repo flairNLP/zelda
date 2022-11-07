@@ -10,7 +10,7 @@ def merge_candidate_lists(PATH_TO_REPOSITORY):
 
     cg_folder = os.path.join(PATH_TO_REPOSITORY, 'other')
 
-    for source in ['wikidata', 'kensho']:#, 'wikilinks']:
+    for source in ['wikidata', 'kensho', 'wikilinks']:
 
         with zipfile.ZipFile(os.path.join(cg_folder, 'mention_entities_counter_' + source + '.zip'), 'r') as zip_ref:
             zip_ref.extractall(cg_folder)
@@ -28,7 +28,7 @@ def merge_candidate_lists(PATH_TO_REPOSITORY):
                 final_lists[mention] = current_mention_entities_counter[mention]
 
     # save the final lists
-    with open(os.path.join(PATH_TO_REPOSITORY, 'train_data', 'zelda_mention_entity_counter.pickle'), 'wb') as handle:
+    with open(os.path.join(PATH_TO_REPOSITORY, 'train_data', 'zelda_mention_entities_counter.pickle'), 'wb') as handle:
         pickle.dump(final_lists, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-merge_candidate_lists('C:\\Users\\Marcel\\Desktop\\Arbeit\\Task\\Entitiy_Linking\\my_dataset_repo\\ED_Dataset')
+#merge_candidate_lists('C:\\Users\\Marcel\\Desktop\\Arbeit\\Task\\Entitiy_Linking\\my_dataset_repo\\ED_Dataset')

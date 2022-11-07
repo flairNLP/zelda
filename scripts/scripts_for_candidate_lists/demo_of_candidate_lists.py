@@ -33,6 +33,59 @@ for mention in mention_entities_counter:
 
 print(len(mention_to_mentions))
 
+######################################################################
+simpler_mentions_candidate_dict = {}
+for mention in mention_entities_counter:
+    # create mention without blanks
+    simplified_mention = mention.replace(' ', '').lower()
+    # the simplified mention already occurred from another mention
+    if simplified_mention in simpler_mentions_candidate_dict:
+        for entity in mention_entities_counter[mention]:
+            if entity in simpler_mentions_candidate_dict[simplified_mention]:
+                simpler_mentions_candidate_dict[simplified_mention][entity] += mention_entities_counter[mention][entity]
+            else:
+                simpler_mentions_candidate_dict[simplified_mention][entity] = mention_entities_counter[mention][entity]
+    # its the first occurrence of the simplified mention
+    else:
+        simpler_mentions_candidate_dict[simplified_mention] = mention_entities_counter[mention]
+
+even_more_simpler_mentions_candidate_dict = {}
+for mention in mention_entities_counter:
+    # create mention without blanks
+    simplified_mention=punc_remover.sub("", mention.lower())
+    # the simplified mention already occurred from another mention
+    if simplified_mention in even_more_simpler_mentions_candidate_dict:
+        for entity in mention_entities_counter[mention]:
+            if entity in even_more_simpler_mentions_candidate_dict[simplified_mention]:
+                even_more_simpler_mentions_candidate_dict[simplified_mention][entity] += mention_entities_counter[mention][entity]
+            else:
+                even_more_simpler_mentions_candidate_dict[simplified_mention][entity] = mention_entities_counter[mention][entity]
+    # its the first occurrence of the simplified mention
+    else:
+        even_more_simpler_mentions_candidate_dict[simplified_mention] = mention_entities_counter[mention]
+
+
+def get_candidates_and_mfs_two(mentions):
+    for mention in mentions:
+        try:
+            candidates = mention_entities_counter[mention]
+        except KeyError:
+            try:
+                candidates = mention_entities_counter[mention.lower().replace(' ', '')]
+            except KeyError:
+                try:
+                    candidates = mention_entities_counter[punc_remover.sub("", mention.lower())]
+                except KeyError:
+                    candidates = []
+    if not candidates:
+        return [], ''
+    else:
+
+        mfs = max(candidates.items(), key=operator.itemgetter(1))[0]
+
+        return list(candidates.keys()), mfs
+######################################################################
+
 def find_mention(mention):
 
     try:
@@ -86,8 +139,9 @@ for filename in os.listdir(test_folder):
 
                 mention = input_text[index[0]: index[1]]
 
-                mentions = find_mention(mention)
-                candidates, mfs = get_candidates_and_mfs(mentions)
+                candidates, mfs = get_candidates_and_mfs_two([mention])
+                # mentions = find_mention(mention)
+                # candidates, mfs = get_candidates_and_mfs(mentions)
 
                 if not candidates:
                     number_mentions_not_contained_in_lists+=1
