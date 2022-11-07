@@ -58,7 +58,11 @@ def generate_entity_descriptions(PATH_TO_REPOSITORY, PATH_TO_KENSHO_JSONL):
 
                 text = text[:1200]
                 sentences = sentence_splitter.split(text)
-                entity_description = sentences[0].to_original_text()
+                if len(sentences) > 0:
+                    entity_description = sentences[0].to_original_text()
+                else:
+                    print(f'Empty entity descripction to title: {title}')
+                    entity_description = ''
 
                 outpt_dict = {'wikipedia_id': page_id, 'wikipedia_title': title, 'description': entity_description}
                 json.dump(outpt_dict, output_jsonl)
