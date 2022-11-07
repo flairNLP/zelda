@@ -13,6 +13,9 @@ def create_train_jsonl(PATH_TO_REPOSITORY, PATH_TO_KENSHO_JSONL):
 
     path_to_save_sections_jsonl = os.path.join(PATH_TO_REPOSITORY, 'train_data', 'zelda_train.jsonl')
 
+    if not os.path.exists(os.path.join(PATH_TO_REPOSITORY, 'train_data')):
+        os.mkdir(os.path.join(PATH_TO_REPOSITORY, 'train_data'))
+
     # first we get all the wikipedia ids in the test datasets
     print('Get ids from test data')
     ids_to_titles_test = os.path.join(PATH_TO_REPOSITORY, 'test_data', 'ids_and_titles', 'wikiids_to_titles_test_splits.pickle')
