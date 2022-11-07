@@ -1,5 +1,5 @@
 # ZELDA benchmark
-ZELDA is an easy to use benchmark for entity dismabiguation (ED) including train and test data. The idea of ZELDA is to create a fair environment to compare ED architectures and 
+ZELDA is an easy-to-use benchmark for entity disambiguation (ED) including train and test data. The idea of ZELDA is to create a fair environment to compare ED architectures and 
 to remove the big hurdle that is in the beginning of supervised ED research: Generating training data, choosing an entity set, obtaining and updating test sets, creating candidate 
 lists and so on. All these steps are no longer necessary using ZELDA, one can focus on investigating ED architectures. So far ZELDA provides a training corpus covering 8 diverse
 test splits, a fixed entity set, candidate lists and entity descriptions. 
@@ -135,6 +135,6 @@ The script scripts/scripts_for_candidate_lists/demo_of_candidate_lists.py demons
 | CL-Recall     |               |               ||||||||
 
 ### Other Scripts
-All other scripts in this repository (e.g. scripts_for_test_data, scripts_for_canidate_lists) must not be used and are added for transparency reasons, to show how we created ZELDA. 
+All other scripts in this repository (e.g. scripts_for_test_data, scripts_for_candidate_lists) must not be used and are added for transparency reasons, to show how we created ZELDA. 
 The data (id-title dictionaries, candidate lists, etc.) was created in October, 2022. Executing the scripts at another time might change the resulting objects 
 because Wikipedia continuously evolves. 
