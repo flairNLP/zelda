@@ -74,8 +74,11 @@ print(f'Wikipedia id: {wikipedia_id} Wikipedia title: {ids_to_titles_test_sets[w
 ```
 
 2. To create the train split you need to download the [Kensho Derived Wikimedia Dataset](https://www.kaggle.com/datasets/kenshoresearch/kensho-derived-wikimedia-data), 
-more specifically the "link_annotated_text.jsonl" file. 
-Once you downloaded the data and cloned the repository you need to set two paths in the script 'repo/scripts/zelda.py' 
+more specifically the "link_annotated_text.jsonl" file. Moreover, for tokenization we utilize the 'en_core_web_sm' model from spacy. Download it with the following command:
+```
+python -m spacy download en_core_web_sm
+```
+Then, to generate the data, you need to set two paths in the script 'repo/scripts/zelda.py' 
 ```
 ...
 # replace the path with the path to the file 'link_annotated_text.jsonl' on your system
@@ -85,7 +88,7 @@ PATH_TO_KENSHO_JSONL = ''
 PATH_TO_REPOSITORY = ''
 ...
 ```
-Moreover you can set two variables 
+Also you can set two variables 
 ```
 # If you want a conll version of ZELDA-train, set this to true
 create_conll_version_of_zelda_train = True
