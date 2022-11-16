@@ -16,11 +16,8 @@ the [WNED-WIKI/WNED-CWEB](https://github.com/lephong/mulrel-nel) corpora process
 
 ### What is Entity Disambiguation?
 
-<!---![Alt text](ed_illustration.JPG  "Entity Disambiguation example")---> 
 In Entity Disambiguation (ED) we are given text and mentions. The task is then to find the unique meaning (e.g. Wikipedia entity) to what the mentions refer.
-<figure>
-<img src="https://raw.githubusercontent.com/marcelmmm/ED_Dataset/main/ed_illustration.JPG?token=GHSAT0AAAAAABYIZCSDRFSSEH4MNA4FGU72Y3U6R3A" width="90%" height="90%" align="center" >
-</figure>
+![Alt text](ed_illustration.JPG  "Entity Disambiguation example")
 
 We talk about Entity Linking (EL) if the input is raw text and a model has to identify mentions and disambiguate them.  
 
