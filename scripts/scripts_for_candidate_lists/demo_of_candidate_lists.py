@@ -1,5 +1,4 @@
 import pickle
-from collections import defaultdict
 import re
 import os
 import operator
@@ -7,36 +6,16 @@ import json
 
 punc_remover = re.compile(r"[\W]+")
 
-PATH_TO_REPOSITORY = 'C:\\Users\\Marcel\\Desktop\\Arbeit\\Task\\Entitiy_Linking\\my_dataset_repo\\ED_Dataset'
-
-
-# to improve the recall of the candidate lists we add a lower cased and a further reduced version of each mention to the mention set
-mention_to_mentions = defaultdict(set)
+PATH_TO_REPOSITORY = ''
 
 # get the mention entities counter
-with open(os.path.join(PATH_TO_REPOSITORY, 'train_data', 'zelda_mention_entity_counter.pickle'), 'rb') as handle:
+with open(os.path.join(PATH_TO_REPOSITORY, 'train_data', 'zelda_mention_entities_counter.pickle'), 'rb') as handle:
     mention_entities_counter = pickle.load(handle)
 
-# normal mentions
-for mention in mention_entities_counter:
-    mention_to_mentions[mention].add(mention)
-
-print(len(mention_to_mentions))
-
-# lower case and remove blanks
-for mention in mention_entities_counter:
-    simplified_mention = mention.lower().replace(' ', '')
-    mention_to_mentions[simplified_mention].add(mention)
-
-    even_more_simplified_mention = punc_remover.sub("", mention.lower())
-    mention_to_mentions[even_more_simplified_mention].add(mention)
-
-print(len(mention_to_mentions))
-
-######################################################################
+# to improve the recall of the candidate lists we add a lower cased and a further reduced version of each mention to the mention set
 simpler_mentions_candidate_dict = {}
 for mention in mention_entities_counter:
-    # create mention without blanks
+    # create mention without blanks and lower cased
     simplified_mention = mention.replace(' ', '').lower()
     # the simplified mention already occurred from another mention
     if simplified_mention in simpler_mentions_candidate_dict:
@@ -51,7 +30,7 @@ for mention in mention_entities_counter:
 
 even_more_simpler_mentions_candidate_dict = {}
 for mention in mention_entities_counter:
-    # create mention without blanks
+    # create simplified mention
     simplified_mention=punc_remover.sub("", mention.lower())
     # the simplified mention already occurred from another mention
     if simplified_mention in even_more_simpler_mentions_candidate_dict:
@@ -64,17 +43,16 @@ for mention in mention_entities_counter:
     else:
         even_more_simpler_mentions_candidate_dict[simplified_mention] = mention_entities_counter[mention]
 
-
-def get_candidates_and_mfs_two(mentions):
+def get_candidates_and_mfs(mentions):
     for mention in mentions:
         try:
             candidates = mention_entities_counter[mention]
         except KeyError:
             try:
-                candidates = mention_entities_counter[mention.lower().replace(' ', '')]
+                candidates = simpler_mentions_candidate_dict[mention.lower().replace(' ', '')]
             except KeyError:
                 try:
-                    candidates = mention_entities_counter[punc_remover.sub("", mention.lower())]
+                    candidates = even_more_simpler_mentions_candidate_dict[punc_remover.sub("", mention.lower())]
                 except KeyError:
                     candidates = []
     if not candidates:
@@ -84,40 +62,6 @@ def get_candidates_and_mfs_two(mentions):
         mfs = max(candidates.items(), key=operator.itemgetter(1))[0]
 
         return list(candidates.keys()), mfs
-######################################################################
-
-def find_mention(mention):
-
-    try:
-        corresponding_mentions = mention_to_mentions[mention]
-        return list(corresponding_mentions)
-    except KeyError:
-        try:
-            corresponding_mentions = mention_to_mentions[mention.lower().replace(' ','')]
-            return list(corresponding_mentions)
-        except KeyError:
-            try:
-                corresponding_mentions = mention_to_mentions[punc_remover.sub("", mention.lower())]
-                return list(corresponding_mentions)
-            except KeyError:
-                return []
-
-
-def get_candidates_and_mfs(mentions):
-    if not mentions:
-        return [], ''
-    else:
-        candidates = mention_entities_counter[mentions[0]].copy()
-        for current_mention in mentions[1:]:
-            for cand, occurence in mention_entities_counter[current_mention].items():
-                if cand in candidates:
-                    candidates[cand] += occurence
-                else:
-                    candidates[cand] = occurence
-
-    mfs = max(candidates.items(), key=operator.itemgetter(1))[0]
-
-    return list(candidates.keys()), mfs
 
 # get the test sets
 test_folder = os.path.join(PATH_TO_REPOSITORY, 'test_data', 'jsonl')
@@ -139,9 +83,7 @@ for filename in os.listdir(test_folder):
 
                 mention = input_text[index[0]: index[1]]
 
-                candidates, mfs = get_candidates_and_mfs_two([mention])
-                # mentions = find_mention(mention)
-                # candidates, mfs = get_candidates_and_mfs(mentions)
+                candidates, mfs = get_candidates_and_mfs([mention])
 
                 if not candidates:
                     number_mentions_not_contained_in_lists+=1

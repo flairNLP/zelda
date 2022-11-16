@@ -1,8 +1,9 @@
 # ZELDA benchmark
 ZELDA is an easy-to-use benchmark for entity disambiguation (ED) including train and test data. The idea of ZELDA is to create a fair environment to compare ED architectures and 
-to remove the big hurdle that is in the beginning of supervised ED research: Generating training data, choosing an entity set, obtaining and updating test sets, creating candidate 
+to remove the big hurdle that stands in the beginning of supervised ED research: Generating training data, choosing an entity set, obtaining and updating test sets, finding candidate 
 lists and so on. All these steps are no longer necessary using ZELDA, one can focus on investigating ED architectures. So far ZELDA provides a training corpus covering 8 diverse
-test splits, a fixed entity set, candidate lists and entity descriptions. 
+test splits, a fixed entity set, candidate lists and entity descriptions. If you wonder where the name comes from note we are considering LINKing mentions 
+to entities and there is a certain video game from Nintendo... ;)  
 
 The training corpus is derived from the [Kensho Derived Wikimedia Dataset](https://www.kaggle.com/datasets/kenshoresearch/kensho-derived-wikimedia-data) 
 (licence [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)). We used the "link_annotated_text.jsonl" that provides wikipedia pages
@@ -13,16 +14,23 @@ The test corpora are the test split of the [AIDA CoNLL-YAGO](https://www.mpi-inf
 the [Reddit EL corpus](https://doi.org/10.5281/zenodo.3970806), the [Tweeki EL corpus](https://ucinlp.github.io/tweeki/), the [ShadowLink dataset](https://huggingface.co/datasets/vera-pro/ShadowLink) and 
 the [WNED-WIKI/WNED-CWEB](https://github.com/lephong/mulrel-nel) corpora processed by [Le and Titov, 2018](https://aclanthology.org/P18-1148/).
 
+### What is Entity Disambiguation?
+
+![Alt text](ed_illustration.JPG  "Entity Disambiguation example")
+
+
+
+
 ### How to use the repository
-This repository is basically a collection of python scripts to obtain and process the data.  The intended use is as follows:
+This repository is basically a collection of python scripts to obtain and process the data. First clone the repository and install the requirements. Note that you need at least python>=3.8 to handle the pickled objects.  The intended use is as follows:
 
 1. The test data is ready to use in the test_data folder. Each split comes in jsonl and conll format.
 
-The **conll** files are tab separated. The first line is a text token, second line contains the wikipedia id and the third line the wikipedia title.
+The **conll** files are tab separated. In the first column is a text token, second column contains the wikipedia id and the third column the wikipedia title.
 Annotations are equipped with BIO-tags, there is a 'O' for tokens with no annotations. Moreover single documents are separated with a '-DOCSTART-' and in the
 beginning of each document there is a comment line (starting with '# ', i.e. hashtag followed by blank) that is a unique identifier for each document.
 The form of this identifier depends on the respective dataset and usually does not contain any additional information  except for the two datasets cweb and wikipedia: Here 
-the document identifier contains the difficulty bracket (separated by a tab). In the following example you see the first lines of the aida-b_final.conll file.
+the document identifier contains the difficulty bracket (separated by a tab, more information on the brackets see [Guo and Barbosa, 2018](https://www.semantic-web-journal.net/system/files/swj1511.pdf)). In the following example you see the first lines of the aida-b_final.conll file.
 ```
 -DOCSTART-
 
@@ -50,12 +58,53 @@ document_dictionary = json.loads(first_line)
 document_text = document_dictionary['text']
 mention_indices = document_dictionary['index']
 mention_gold_titles = document_dictionary['wikipedia_titles']
-mention_gold_ids = document_dictionary['wikipedai_ids']
+mention_gold_ids = document_dictionary['wikipedia_ids']
 
 for index, title, idx in zip(mention_indices, mention_gold_titles, mention_gold_ids):
     mention_start = index[0]
     mention_end=index[1]
     print(f'Mention: {document_text[mention_start:mention_end]} --- Wikipedia title: {title} --- Wikipedia id: {idx}')
+```
+```
+# Output
+Mention: JAPAN --- Wikipedia title: Japan national football team --- Wikipedia id: 993546
+Mention: CHINA --- Wikipedia title: China national football team --- Wikipedia id: 887850
+Mention: AL-AIN --- Wikipedia title: Al Ain --- Wikipedia id: 212131
+Mention: United Arab Emirates --- Wikipedia title: United Arab Emirates --- Wikipedia id: 69328
+Mention: Japan --- Wikipedia title: Japan national football team --- Wikipedia id: 993546
+Mention: Asian Cup --- Wikipedia title: 1996 AFC Asian Cup --- Wikipedia id: 1013464
+Mention: Syria --- Wikipedia title: Syria national football team --- Wikipedia id: 1131669
+Mention: China --- Wikipedia title: China national football team --- Wikipedia id: 887850
+Mention: Uzbekistan --- Wikipedia title: Uzbekistan national football team --- Wikipedia id: 1032413
+Mention: China --- Wikipedia title: China national football team --- Wikipedia id: 887850
+Mention: Uzbek --- Wikipedia title: Uzbekistan national football team --- Wikipedia id: 1032413
+Mention: Igor Shkvyrin --- Wikipedia title: Igor Shkvyrin --- Wikipedia id: 12394021
+Mention: Chinese --- Wikipedia title: China --- Wikipedia id: 5405
+Mention: Soviet --- Wikipedia title: Soviet Union --- Wikipedia id: 26779
+Mention: Asian Cup --- Wikipedia title: AFC Asian Cup --- Wikipedia id: 250683
+Mention: Asian Games --- Wikipedia title: 1994 Asian Games --- Wikipedia id: 3285394
+Mention: Uzbekistan --- Wikipedia title: Uzbekistan national football team --- Wikipedia id: 1032413
+Mention: Japan --- Wikipedia title: Japan national football team --- Wikipedia id: 993546
+Mention: Syria --- Wikipedia title: Syria national football team --- Wikipedia id: 1131669
+Mention: Takuya Takagi --- Wikipedia title: Takuya Takagi --- Wikipedia id: 7612409
+Mention: Hiroshige Yanagimoto --- Wikipedia title: Hiroshige Yanagimoto --- Wikipedia id: 8330373
+Mention: Syrian --- Wikipedia title: Syria national football team --- Wikipedia id: 1131669
+Mention: Syria --- Wikipedia title: Syria national football team --- Wikipedia id: 1131669
+Mention: Hassan Abbas --- Wikipedia title: Hassan Abbas --- Wikipedia id: 21828137
+Mention: Syria --- Wikipedia title: Syria national football team --- Wikipedia id: 1131669
+Mention: Japan --- Wikipedia title: Japan national football team --- Wikipedia id: 993546
+Mention: Syrian --- Wikipedia title: Syria national football team --- Wikipedia id: 1131669
+Mention: Syrian --- Wikipedia title: Syria national football team --- Wikipedia id: 1131669
+Mention: Japan --- Wikipedia title: Japan national football team --- Wikipedia id: 993546
+Mention: Shu Kamo --- Wikipedia title: Shu Kamo --- Wikipedia id: 9087957
+Mention: Syrian --- Wikipedia title: Syria national football team --- Wikipedia id: 1131669
+Mention: Japan --- Wikipedia title: Japan --- Wikipedia id: 15573
+Mention: World Cup --- Wikipedia title: FIFA World Cup --- Wikipedia id: 11370
+Mention: FIFA --- Wikipedia title: FIFA --- Wikipedia id: 11049
+Mention: UAE --- Wikipedia title: United Arab Emirates national football team --- Wikipedia id: 1044396
+Mention: Kuwait --- Wikipedia title: Kuwait national football team --- Wikipedia id: 1041857
+Mention: South Korea --- Wikipedia title: South Korea national football team --- Wikipedia id: 1018627
+Mention: Indonesia --- Wikipedia title: Indonesia national football team --- Wikipedia id: 1044538
 ```
 
 Additionally we provide the entity vocabulary of all test splits combined in test_data/wikiids_to_titles_test_splits.pickle.
@@ -72,9 +121,14 @@ wikipedia_id = list(ids_to_titles_test_sets.keys())[0]
 print(f'Wikipedia id: {wikipedia_id} Wikipedia title: {ids_to_titles_test_sets[wikipedia_id]}')
 
 ```
+```
+# Output 
+There are 14206 entities in the test sets.
+Wikipedia id: 993546 Wikipedia title: Japan national football team
+```
 
 2. To create the train split you need to download the [Kensho Derived Wikimedia Dataset](https://www.kaggle.com/datasets/kenshoresearch/kensho-derived-wikimedia-data), 
-more specifically the "link_annotated_text.jsonl" file. Moreover, for tokenization we utilize the 'en_core_web_sm' model from spacy. Download it with the following command:
+more specifically the "link_annotated_text.jsonl" file. Moreover, for tokenization we utilize the 'en_core_web_sm' model from [spaCy](https://spacy.io/usage/models). Download it with the following command:
 ```
 python -m spacy download en_core_web_sm
 ```
@@ -113,31 +167,41 @@ with open('train_data/zelda_ids_to_titles.pickle', 'rb') as handle:
     
 print(f'There are {len(zelda_ids_to_titles)} entities in zelda.')
 
-wikipedia_id = list(ids_to_titles_test_sets.keys())[0]
+wikipedia_id = list(zelda_ids_to_titles.keys())[42]
 
-print(f'Wikipedia id: {wikipedia_id} Wikipedia title: {ids_to_titles_test_sets[wikipedia_id]}')
+print(f'Wikipedia id: {wikipedia_id} Wikipedia title: {zelda_ids_to_titles[wikipedia_id]}')
 
 # once created, the mention_entities_counter contains, for each collected mention, a dictionary of entity:count pairs where 
-we saved how often we saw the respective mention together with a certain entity. 
+# we saved how often we saw the respective mention together with a certain entity. 
 
 with open('train_data/zelda_mention_entities_counter.pickle', 'rb') as handle:
     zelda_mention_entities_counter = pickle.load(handle)
     
 mention = 'Ronaldo'
 print(zelda_mention_entities_counter[mention])
-# {'Cristiano Ronaldo': 3, 'Ronaldo (Brazilian footballer)': 2}
+```
+```
+# Output
+There are 821559 entities in zelda.
+Wikipedia id: 9663 Wikipedia title: Electronics
+{'Cristiano Ronaldo': 3, 'Ronaldo (Brazilian footballer)': 2}
 ```
 
 ### Candidate Lists
 
-The script scripts/scripts_for_candidate_lists/demo_of_candidate_lists.py demonstrates how we used the candidate lists to achieve the numbers of our paper (add reference).
+The script scripts/scripts_for_candidate_lists/demo_of_candidate_lists.py demonstrates how we used the candidate lists to achieve the numbers in our paper (add reference).
+Note that to use it you need to set the PATH_TO_REPOSITORY variable in the script. Executing it should output the following numbers.
 
 |               | AIDA-B        |TWEEKI         | REDDIT-P      |REDDIT-C       |CWEB           |WIKI           |S-TAIL         |S-SHADOW       |S-TOP          |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| MFS           |               |               ||||||||
-| CL-Recall     |               |               ||||||||
+| MFS           |     0,635     |   0,723       |   0,834       |    0,81       |    0,612      |     0,651     |   0,994       |    0,149      |    0,413      |
+| CL-Recall     |     0,911     |   0,94        |   0,984       |    0,983      |    0,924      |     0,988     |   0,988       |    0,567      |    0,731      |
+
+MFS ("most frequent sense") chooses, for each mention, the entity that we empirically counted the most often for that mention (assuming the mention is contained in our lists).
+CL-Recall (CL for "Candidate List") indicates whether the gold entity is actually contained in the candidate lists for all the mentions. 
+The numbers report the accuracy, i.e.  ```#mentions-linking-to-their-mfs/#mentions``` and ```#mentions-that-have-gold-entity-in-their-candidates/#mentions```.
 
 ### Other Scripts
-All other scripts in this repository (e.g. scripts_for_test_data, scripts_for_candidate_lists) must not be used and are added for transparency reasons, to show how we created ZELDA. 
-The data (id-title dictionaries, candidate lists, etc.) was created in October, 2022. Executing the scripts at another time might change the resulting objects 
+All other scripts in this repository (e.g. scripts_for_test_data, scripts_for_candidate_lists) are not needed to create the data and are added for transparency reasons, to show how we created ZELDA. 
+The objects (id-title dictionaries, candidate lists, etc.) were created in October 2022. Executing the additional scripts at another time might change the resulting objects 
 because Wikipedia continuously evolves. 
