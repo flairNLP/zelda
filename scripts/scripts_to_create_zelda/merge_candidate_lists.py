@@ -30,5 +30,3 @@ def merge_candidate_lists(PATH_TO_REPOSITORY):
     # save the final lists
     with open(os.path.join(PATH_TO_REPOSITORY, 'train_data', 'zelda_mention_entities_counter.pickle'), 'wb') as handle:
         pickle.dump(final_lists, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-#merge_candidate_lists('C:\\Users\\Marcel\\Desktop\\Arbeit\\Task\\Entitiy_Linking\\my_dataset_repo\\ED_Dataset')

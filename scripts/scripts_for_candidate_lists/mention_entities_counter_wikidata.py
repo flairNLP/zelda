@@ -11,11 +11,13 @@ from collections import defaultdict
 import os
 import multiprocessing
 
+PATH_TO_REPOSITORY = ''
+
 # first we need to get all titles of our vocabulary
 
 # get all titles from train and test
 # load the set of titles from ZELDA, we will only consider these titles
-with open('/glusterfs/dfs-gfs-dist/milichma/new_m/train_data/zelda_ids_to_titles.pickle', 'rb') as handle:
+with open(os.join(PATH_TO_REPOSITORY, 'train_data', 'zelda_ids_to_titles.pickle'), 'rb') as handle:
     ids_to_titles_zelda = pickle.load(handle)
 
 set_of_titles_in_train_and_test = set(ids_to_titles_zelda.values())
@@ -24,7 +26,8 @@ list_of_titles = list(set_of_titles_in_train_and_test)
 print(number_titles)
 
 # create temporary folder for the results of the processes
-tmp_folder_path = '/glusterfs/dfs-gfs-dist/milichma/new_m/cg/wikidata_mp_output/'
+folder_to_save_output_dict = ''
+tmp_folder_path = os.path.join(folder_to_save_output_dict, 'tmp')
 if not os.path.exists(tmp_folder_path):
     os.mkdir(tmp_folder_path)
 
@@ -111,7 +114,7 @@ if __name__ == '__main__':
 
     # save mention entities counter
     with open(
-            os.path.join('/glusterfs/dfs-gfs-dist/milichma/new_m/cg',  'mention_entities_counter_wikidata.pickle'),
+            os.path.join(folder_to_save_output_dict,  'mention_entities_counter_wikidata.pickle'),
             'wb') as handle:
         pickle.dump(mention_entities_counter, handle, protocol=pickle.HIGHEST_PROTOCOL)
 

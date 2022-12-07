@@ -4,19 +4,21 @@
 import json
 from collections import defaultdict
 import pickle
+import os
 
 mention_and_entities_counter = defaultdict(dict)
 
-# first of: Kensho wikipedia
+PATH_TO_REPOSITORY = ''
+folder_of_kensho_link_annotated_jsonl = ''
 
 lines_counter = 0
 total_lines_kensho = 5354091
 
 # get entity vocabulary from ZELDA
-with open('/glusterfs/dfs-gfs-dist/milichma/new_m/train_data/zelda_ids_to_titles.pickle', 'rb') as handle:
+with open(os.join(PATH_TO_REPOSITORY, 'train_data', 'zelda_ids_to_titles.pickle'), 'rb') as handle:
     ids_to_titles_zelda = pickle.load(handle)
 
-with open('/glusterfs/dfs-gfs-dist/milichma/kensho_wikimedia/link_annotated_text.jsonl', mode = 'r', encoding='utf-8') as kensho_lines:
+with open(os.path.join(folder_of_kensho_link_annotated_jsonl, 'link_annotated_text.jsonl'), mode = 'r', encoding='utf-8') as kensho_lines:
 
     for line in kensho_lines:
         jline = json.loads(line)
@@ -49,6 +51,6 @@ with open('/glusterfs/dfs-gfs-dist/milichma/kensho_wikimedia/link_annotated_text
             print('processed {:10.4f} %\n'.format((lines_counter / total_lines_kensho) * 100))
 
 with open(
-        '/glusterfs/dfs-gfs-dist/milichma/new_m/cg/mention_entities_counter_kensho.pickle',
+        os.path.join(folder_of_kensho_link_annotated_jsonl, 'mention_entities_counter_kensho.pickle'),
         'wb') as handle:
     pickle.dump(mention_and_entities_counter, handle, protocol=pickle.HIGHEST_PROTOCOL)

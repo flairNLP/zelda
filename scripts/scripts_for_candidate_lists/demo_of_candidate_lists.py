@@ -43,18 +43,17 @@ for mention in mention_entities_counter:
     else:
         even_more_simpler_mentions_candidate_dict[simplified_mention] = mention_entities_counter[mention]
 
-def get_candidates_and_mfs(mentions):
-    for mention in mentions:
+def get_candidates_and_mfs(mention):
+    try:
+        candidates = mention_entities_counter[mention]
+    except KeyError:
         try:
-            candidates = mention_entities_counter[mention]
+            candidates = simpler_mentions_candidate_dict[mention.lower().replace(' ', '')]
         except KeyError:
             try:
-                candidates = simpler_mentions_candidate_dict[mention.lower().replace(' ', '')]
+                candidates = even_more_simpler_mentions_candidate_dict[punc_remover.sub("", mention.lower())]
             except KeyError:
-                try:
-                    candidates = even_more_simpler_mentions_candidate_dict[punc_remover.sub("", mention.lower())]
-                except KeyError:
-                    candidates = []
+                candidates = []
     if not candidates:
         return [], ''
     else:
@@ -83,7 +82,7 @@ for filename in os.listdir(test_folder):
 
                 mention = input_text[index[0]: index[1]]
 
-                candidates, mfs = get_candidates_and_mfs([mention])
+                candidates, mfs = get_candidates_and_mfs(mention)
 
                 if not candidates:
                     number_mentions_not_contained_in_lists+=1

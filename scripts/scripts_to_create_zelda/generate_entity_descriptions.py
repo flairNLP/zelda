@@ -73,6 +73,3 @@ def generate_entity_descriptions(PATH_TO_REPOSITORY, PATH_TO_KENSHO_JSONL):
                         f'{counter / number_of_entities * 100:.2f}% entities processed.')
 
                     print(f'Introduction={counter - no_introduction}, NO Introduction = {no_introduction}')
-
-# generate_entity_descriptions(PATH_TO_REPOSITORY='C:\\Users\\Marcel\\Desktop\\Arbeit\\Task\\Entitiy_Linking\\my_dataset_repo\\ED_Dataset',
-#                              PATH_TO_KENSHO_JSONL='C:\\Users\\Marcel\\Desktop\\tmp_arbeit\\ddddd\\link_annotated_text.jsonl')

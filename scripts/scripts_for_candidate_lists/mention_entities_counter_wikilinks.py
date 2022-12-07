@@ -11,7 +11,8 @@ import urllib.parse
 import requests
 import time
 
-folder_of_wikilinks_files = '/glusterfs/dfs-gfs-dist/milichma/wikilinks/new'
+folder_of_wikilinks_files = ''
+PATH_TO_REPOSITORY = ''
 
 # as a first step we collect all wikipedia titles in the dataset
 # since the dataset is rather old we need to check the titles for existence and update them if necessary
@@ -62,16 +63,6 @@ for filename in os.listdir(folder_of_wikilinks_files):
                     continue
 
                 set_of_all_wikipedia_titles_in_wikilinks.add(original_wikipedia_title)
-
-# save the dictionaries
-# with open(
-#         os.path.join('/glusterfs/dfs-gfs-dist/milichma/wikilinks/new', 'set_of_titles.pickle'),
-#         'wb') as handle:
-#     pickle.dump(set_of_all_wikipedia_titles_in_wikilinks, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-# with open(os.path.join('/glusterfs/dfs-gfs-dist/milichma/wikilinks/new', 'set_of_titles.pickle'),
-#         'rb') as handle:
-#     set_of_all_wikipedia_titles_in_wikilinks= pickle.load(handle)
 
 # once we have the original wikipedia titles we will check each one of them for existence
 
@@ -202,7 +193,7 @@ key = list(return_dict.keys())[0]
 print(return_dict[key])
 
 # to filter entities we do not need, first get the entity vocabulary from ZELDA
-with open('/glusterfs/dfs-gfs-dist/milichma/new_m/train_data/zelda_ids_to_titles.pickle',
+with open(os.join(PATH_TO_REPOSITORY, 'train_data', 'zelda_ids_to_titles.pickle'),
         'rb') as handle:
     ids_to_titles_zelda= pickle.load(handle)
 
@@ -250,6 +241,6 @@ for filename in os.listdir(folder_of_wikilinks_files):
 
 # save the dictionaries
 with open(
-        os.path.join('/glusterfs/dfs-gfs-dist/milichma/new_m/cg/', 'mention_entities_counter_wikilinks.pickle'),
+        os.path.join(folder_of_wikilinks_files, 'mention_entities_counter_wikilinks.pickle'),
         'wb') as handle:
     pickle.dump(mention_entities_counter, handle, protocol=pickle.HIGHEST_PROTOCOL)

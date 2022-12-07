@@ -12,10 +12,11 @@
 import json
 import requests
 import pickle
-from pathlib import Path
+import os
 
-path_to_kensho_jsnol = '/glusterfs/dfs-gfs-dist/milichma/kensho_wikimedia/link_annotated_text.jsonl'
-path_to_save_id_titles_dictionary = '/glusterfs/dfs-gfs-dist/milichma/m/other/kensho_ids_to_titles_redirects_solved.pickle'
+path_to_kensho_jsnol = ''
+path_to_save_id_titles_dictionary = ''
+PATH_TO_REPOSITORY = ''
 
 # first we get all ids from kensho
 print('create set of all ids in the data')
@@ -36,12 +37,6 @@ with open(path_to_kensho_jsnol, mode='r', encoding='utf-8') as kensho:
         line = kensho.readline()
 
 print(f'Id set created, total of {len(all_ids)} wikipedia ids in the kensho dataset.')
-
-# pickle the resulting dictionary
-with open('/glusterfs/dfs-gfs-dist/milichma/m/other/all_ids_in_kensho', 'wb') as handle:
-     pickle.dump(all_ids, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-
 
 # next we try to get a title for each id, we do this by making a call to the wikimedia api for the ids
 wikiid_wikiname_dict = {}
@@ -93,7 +88,7 @@ print(f'Done. Out of ids {len(all_ids)} we have {len(all_ids) - bad_ids} ids tha
 
 # add (id,title) pairs from test data as well, a small percentage of them is not covered by kensho
 #ids_and_titles = Path.cwd().parent / 'test_data' / 'ids_and_titles' / 'wikiids_to_titles_across_all_test_sets.pickle'
-ids_and_titles = '/glusterfs/dfs-gfs-dist/milichma/m/test_data/ids_and_titles/wikiids_to_titles_test_splits.pickle'
+ids_and_titles = os.path.join(PATH_TO_REPOSITORY, 'test_data', 'ids_and_titles', 'wikiids_to_titles_test_splits.pickle')
 
 with open(ids_and_titles, 'rb') as handle:
     dict_ids_to_titles_in_test = pickle.load(handle)
