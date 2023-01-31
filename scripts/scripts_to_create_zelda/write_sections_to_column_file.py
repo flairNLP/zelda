@@ -1,15 +1,11 @@
 # file to create a column corpus, given a list of wikipedia sections
-
-from flair.tokenization import SpacyTokenizer
-from flair.data import Sentence
-import pickle
+import spacy
 import json
 import os
-#from ..zelda import PATH_TO_REPOSITORY
+
 
 def create_zelda_conll(PATH_TO_REPOSITORY):
     print('Create conll file...')
-    tokenizer = SpacyTokenizer('en_core_web_sm')
 
     conll_file_path = os.path.join(PATH_TO_REPOSITORY, 'train_data', 'zelda_train.conll')
     write = open(conll_file_path, mode='w', encoding='utf-8')
@@ -20,12 +16,14 @@ def create_zelda_conll(PATH_TO_REPOSITORY):
 
     lines_counter = 0
 
-    input_jsonl=open(path_to_sections_jsonl, 'r', encoding='utf-8')
+    nlp = spacy.load("en_core_web_sm")
+
+    input_jsonl = open(path_to_sections_jsonl, 'r', encoding='utf-8')
     # given the filtered set of wikipedia pages, create a column file with which one can train
     for line in input_jsonl:
 
         # we write DOCSTART before each section
-        write.write('-DOCSTART-\n\n')
+        write.write('-DOCSTART-\n')
 
         line_dict = json.loads(line)
         text = line_dict['text']
@@ -51,32 +49,66 @@ def create_zelda_conll(PATH_TO_REPOSITORY):
         target_page_ids = line_dict['wikipedia_ids']
         wikinames = line_dict['wikipedia_titles']
 
-        sentence = Sentence(text, use_tokenizer=tokenizer)
+        # tokenize and sentence split the text
+        doc = nlp(text)
 
-        # iterate through all annotations and add to corresponding tokens
+        # get all token start indices
+        offsets = set()
+        sentence_starts = set()
+        for token in doc:
+            offsets.add(token.idx)
+            sentence_starts.add(token.sent[0].idx)
+        offsets.add(len(text))
+
+        # add all entity start indices and remember entities as list
+        links = []
         for (mention_start, mention_end), wikiname, wikiid in zip(link_indices, wikinames, target_page_ids):
+            if mention_start == mention_end: continue # some anchor texts get removed due to formatting weirdness
+            offsets.add(mention_start)
+            links.append((mention_start, mention_end, wikiname.replace(' ', '_'), str(wikiid)))
 
-            # set annotation for tokens of entity mention
-            first = True
-            annotated_tokens_string = ''
+        # order all offsets
+        offsets_ordered = list(offsets)
+        offsets_ordered.sort()
 
-            for token in sentence.tokens:
-                if ((token.start_pos >= mention_start and token.end_pos <= mention_end)
-                        or (
-                                token.start_pos >= mention_start and token.start_pos < mention_end)):
-                    if first:
-                        token.set_label(typename='nel', value='B-' + str(wikiid) + '\t' + 'B-' + str(wikiname))
-                        first = False
-                    else:
-                        token.set_label(typename='nel', value='I-' + str(wikiid) + '\t' + 'I-' + str(wikiname))
+        # get the first link
+        next_link = links.pop(0)
+        entity_started = False
 
-        # WRITE EACH SECTION TO FILE
-        for token in sentence:
-            label = token.get_label('nel').value
-            if label == 'O':  # no entity
-                write.write(token.text + '\tO\tO\n')
-            else:
-                write.write(token.text + '\t' + label + '\n')
+        # go through all start positions
+        for start, end in zip(offsets_ordered, offsets_ordered[1:]):
+
+            # a newline before each sentence
+            if start in sentence_starts:
+                write.write('\n')
+
+            span_token = text[start:end].rstrip()
+
+            # if start position greater than current link, get next link
+            if next_link and start > next_link[1] - 1:
+
+                if not entity_started:
+                    print("ERROR! Next entity started before previous was written")
+
+                next_link = links.pop(0) if len(links) > 0 else None
+                entity_started = False
+
+            tag = 'O\tO'
+
+            # if we are inside an entity
+            if next_link and entity_started and start > next_link[0]:
+                tag = 'I-' + next_link[3] + '\t' + 'I-' + next_link[2]
+
+            # if start position is that of link, add annotation
+            if next_link and start == next_link[0]:
+                tag = 'B-' + next_link[3] + '\t' + 'B-' + next_link[2]
+                entity_started = True
+
+            if span_token.strip() != '':
+                write.write(span_token + '\t' + tag + '\n')
+
+        if len(links) > 0:
+            print("ERROR! Unmatched entities left!")
 
         # empty line after each section/document
         write.write('\n')
