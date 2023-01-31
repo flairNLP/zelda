@@ -3,7 +3,7 @@
 ZELDA is a comprehensive benchmark for entity disambiguation (ED) that you can use to train and compare ED models. It includes training data, 8 test splits, standardized candidate lists and entity descriptions:
 
 | Split             | Size            | JSON format | CoNLL format |
-|-------------------|-----------------|-------------|--------------|
+|-------------------|-----------------|-------------|:------------:|
 | ZELDA train       | 95k paragraphs  |             | [link](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.conll) |
 | _test splits_     |                 |             |              |
 | AIDA-B            | 231 articles    |             |              |
