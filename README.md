@@ -4,7 +4,7 @@ ZELDA is a comprehensive benchmark for entity disambiguation (ED) that you can u
 
 | Split             | Size            | JSON format | CoNLL format |
 |-------------------|-----------------|-------------|--------------|
-| ZELDA train       | 95k paragraphs  |             |              |
+| ZELDA train       | 95k paragraphs  |             | [link](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.conll) |
 | _test splits_     |                 |             |              |
 | AIDA-B            | 231 articles    |             |              |
 | TWEEKI            | 500 short texts |             |              |
