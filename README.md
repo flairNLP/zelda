@@ -3,18 +3,18 @@
 ZELDA is a comprehensive benchmark for entity disambiguation (ED) that you can use to train and compare ED models. It includes training data, 8 test splits, standardized candidate lists and entity descriptions:
 
 | Split             | Size            | JSON format | CoNLL format |
-|-------------------|-----------------|-------------|:------------:|
-| ZELDA train       | 95k paragraphs  |             | [link](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.conll) |
+|:-----------------|:-----------------:|:-----------:|:------------:|
+| ZELDA train       | large  |             | [link](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.conll) |
 | _test splits_     |                 |             |              |
-| AIDA-B            | 231 articles    |             |              |
-| TWEEKI            | 500 short texts |             |              |
-| REDDIT - POSTS    | 377 short texts |             |              |
-| REDDIT - COMMENTS | 360 short texts |             |              |
-| WNED - WIKI       | 318 articles    |             |              |
-| WNED - CWEB       | 320 pages       |             |              |
-| SLINKS - TOP      | 904 short texts |             |              |
-| SLINKS - SHADOW   | 904 short texts |             |              |
-| SLINKS - TAI      | 902 short texts |             |              |
+| AIDA-B            | small    |             |              |
+| TWEEKI            | small |             |              |
+| REDDIT - POSTS    | small |             |              |
+| REDDIT - COMMENTS | small |             |              |
+| WNED - WIKI       | small    |             |              |
+| WNED - CWEB       | small       |             |              |
+| SLINKS - TOP      | small |             |              |
+| SLINKS - SHADOW   | small |             |              |
+| SLINKS - TAI      | small |             |              |
 
 You should train your model using ZELDA train and evaluate with all splits. The macro-averaged accuracy over all splits is your final evaluation number.
 
