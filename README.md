@@ -2,7 +2,7 @@
 
 ZELDA is a comprehensive benchmark for entity disambiguation (ED) that you can use to train and compare ED models. It includes training data, 8 test splits, standardized candidate lists and entity descriptions.
 
-Download the corpus as one big zip file [here](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.json)
+Download ZELDA as one big zip file [here](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.json)
 
 The files have the following structure:
 ```console
@@ -37,15 +37,48 @@ Please refer to our paper for information on how the benchmark was constructed:
 }
 ```
 
-## Getting Started
+# How to Load
 
-Download either the JSON or CoNLL files to train your entity linker :)
+## CONLL-Format
 
-If you use Flair, you can load the corpus directly with the following snippet: 
+```
+-DOCSTART-
 
+# 1163testb SOCCER
+SOCCER	O	O
+-	O	O
+JAPAN	B-993546	B-Japan national football team
+GET	O	O
+LUCKY	O	O
+WIN	O	O
+,	O	O
+CHINA	B-887850	B-China national football team
+IN	O	O
+```
+## JSONL-Format
 
+In the **jsonl** files each document is in the form of a dictionary with keys 'id', 'text', 'index', 'wikipedia_titles' and 'wikipedia_ids'.
+```
+import json
 
-## Wait, What is Entity Disambiguation?
+input_jsonl = open('test_data/jsonl/aida-b_final.jsonl', mode='r', encoding='utf-8')
+
+# each line represents one document
+first_line = next(input_jsonl)
+document_dictionary = json.loads(first_line)
+
+document_text = document_dictionary['text']
+mention_indices = document_dictionary['index']
+mention_gold_titles = document_dictionary['wikipedia_titles']
+mention_gold_ids = document_dictionary['wikipedia_ids']
+
+for index, title, idx in zip(mention_indices, mention_gold_titles, mention_gold_ids):
+    mention_start = index[0]
+    mention_end=index[1]
+    print(f'Mention: {document_text[mention_start:mention_end]} --- Wikipedia title: {title} --- Wikipedia id: {idx}')
+```
+
+## What is Entity Disambiguation?
 
 In Entity Disambiguation (ED) we are given text and mentions. The task is then to find the unique meaning (e.g. Wikipedia entity) to what the mentions refer.
 ![Alt text](ed_illustration.JPG  "Entity Disambiguation example")
@@ -90,26 +123,7 @@ WIN	O	O
 CHINA	B-887850	B-China national football team
 IN	O	O
 ```
-In the **jsonl** files each document is in the form of a dictionary with keys 'id', 'text', 'index', 'wikipedia_titles' and 'wikipedia_ids'.
-```
-import json
 
-input_jsonl = open('test_data/jsonl/aida-b_final.jsonl', mode='r', encoding='utf-8')
-
-# each line represents one document
-first_line = next(input_jsonl)
-document_dictionary = json.loads(first_line)
-
-document_text = document_dictionary['text']
-mention_indices = document_dictionary['index']
-mention_gold_titles = document_dictionary['wikipedia_titles']
-mention_gold_ids = document_dictionary['wikipedia_ids']
-
-for index, title, idx in zip(mention_indices, mention_gold_titles, mention_gold_ids):
-    mention_start = index[0]
-    mention_end=index[1]
-    print(f'Mention: {document_text[mention_start:mention_end]} --- Wikipedia title: {title} --- Wikipedia id: {idx}')
-```
 ```
 # Output
 Mention: JAPAN --- Wikipedia title: Japan national football team --- Wikipedia id: 993546
