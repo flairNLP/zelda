@@ -1,20 +1,31 @@
 # ZELDA benchmark
 
-ZELDA is a comprehensive benchmark for entity disambiguation (ED) that you can use to train and compare ED models. It includes training data, 8 test splits, standardized candidate lists and entity descriptions:
+ZELDA is a comprehensive benchmark for entity disambiguation (ED) that you can use to train and compare ED models. It includes training data, 8 test splits, standardized candidate lists and entity descriptions.
 
-| Split             | Size            | JSON format | CoNLL format |
-|:-----------------|:-----------------:|:-----------:|:------------:|
-| ZELDA train       | large  |             | [link](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.conll) |
-| _test splits_     |                 |             |              |
-| AIDA-B            | small    |             |              |
-| TWEEKI            | small |             |              |
-| REDDIT - POSTS    | small |             |              |
-| REDDIT - COMMENTS | small |             |              |
-| WNED - WIKI       | small    |             |              |
-| WNED - CWEB       | small       |             |              |
-| SLINKS - TOP      | small |             |              |
-| SLINKS - SHADOW   | small |             |              |
-| SLINKS - TAI      | small |             |              |
+Download the corpus: 
+- in CoNLL column corpus format at [link](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.json)
+- in JSON format at [link](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.conll) 
+
+The files have the following structure:
+```console
+project
+│   README.md
+│   file001.txt    
+│
+└───folder1
+│   │   file011.txt
+│   │   file012.txt
+│   │
+│   └───subfolder1
+│       │   file111.txt
+│       │   file112.txt
+│       │   ...
+│   
+└───folder2
+    │   file021.txt
+    │   file022.txt
+```
+
 
 You should train your model using ZELDA train and evaluate with all splits. The macro-averaged accuracy over all splits is your final evaluation number.
 
