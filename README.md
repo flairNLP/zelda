@@ -2,9 +2,7 @@
 
 ZELDA is a comprehensive benchmark for entity disambiguation (ED) that you can use to train and compare ED models. It includes training data, 8 test splits, standardized candidate lists and entity descriptions.
 
-Download the corpus: 
-- in CoNLL column corpus format at [link](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.json)
-- in JSON format at [link](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.conll) 
+Download the corpus as one big zip file [here](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.json)
 
 The files have the following structure:
 ```console
@@ -25,7 +23,6 @@ project
     │   file021.txt
     │   file022.txt
 ```
-
 
 You should train your model using ZELDA train and evaluate with all splits. The macro-averaged accuracy over all splits is your final evaluation number.
 
