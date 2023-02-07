@@ -6,9 +6,10 @@ Download ZELDA as one big zip file [here](https://nlp.informatik.hu-berlin.de/re
 
 The files have the following structure:
 ```console
-Zelda
-├── other
-│   └── entity_descriptions.jsonl
+ZELDA
+└── train_data
+    ├── zelda_train.conll
+│   └── zelda_train.jsonl
 ├── test_data
 │   ├── conll
 │   │   ├── test_aida-b.conll
@@ -30,9 +31,8 @@ Zelda
 │       ├── test_shadowlinks-top.jsonl
 │       ├── test_tweeki.jsonl
 │       └── test_wned-wiki.jsonl
-└── train_data
-    ├── zelda_train.conll
-    └── zelda_train.jsonl
+├── other
+    └── entity_descriptions.jsonl
 ```
 
 You should train your model using ZELDA train and evaluate with all splits. The macro-averaged accuracy over all splits is your final evaluation number.
