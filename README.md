@@ -6,22 +6,33 @@ Download ZELDA as one big zip file [here](https://nlp.informatik.hu-berlin.de/re
 
 The files have the following structure:
 ```console
-project
-│   README.md
-│   file001.txt    
-│
-└───folder1
-│   │   file011.txt
-│   │   file012.txt
-│   │
-│   └───subfolder1
-│       │   file111.txt
-│       │   file112.txt
-│       │   ...
-│   
-└───folder2
-    │   file021.txt
-    │   file022.txt
+Zelda
+├── other
+│   └── entity_descriptions.jsonl
+├── test_data
+│   ├── conll
+│   │   ├── test_aida-b.conll
+│   │   ├── test_cweb.conll
+│   │   ├── test_reddit-comments.conll
+│   │   ├── test_reddit-posts.conll
+│   │   ├── test_shadowlinks-shadow.conll
+│   │   ├── test_shadowlinks-tail.conll
+│   │   ├── test_shadowlinks-top.conll
+│   │   ├── test_tweeki.conll
+│   │   └── test_wned-wiki.conll
+│   └── jsonl
+│       ├── test_aida-b.jsonl
+│       ├── test_cweb.jsonl
+│       ├── test_reddit-comments.jsonl
+│       ├── test_reddit-posts.jsonl
+│       ├── test_shadowlinks-shadow.jsonl
+│       ├── test_shadowlinks-tail.jsonl
+│       ├── test_shadowlinks-top.jsonl
+│       ├── test_tweeki.jsonl
+│       └── test_wned-wiki.jsonl
+└── train_data
+    ├── zelda_train.conll
+    └── zelda_train.jsonl
 ```
 
 You should train your model using ZELDA train and evaluate with all splits. The macro-averaged accuracy over all splits is your final evaluation number.
