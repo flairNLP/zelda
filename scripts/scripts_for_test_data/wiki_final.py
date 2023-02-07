@@ -1,6 +1,7 @@
 # script for processing the wned-wikipedia (wiki) dataset
 # data taken from here: https://github.com/lephong/mulrel-nel
 # they provide the data in conll format and raw text together with an xml file for the annotations
+from pathlib import Path
 
 # the annotations in the cweb dataset are wikipedia page titles
 # to make sure these annotations are up-to-date, we check whether the title yields a proper wikipedia page using the wikipedia-api
@@ -14,10 +15,13 @@ import os
 import json
 
 # path to the folder that contains wikipedia.xml, wikipedia.conll, RawText,...
-data_folder = ''
+input_data_folder = '../../local_data'
+output_data_folder = '../../zelda_data'
 
-zelda_folder = os.path.join(data_folder, 'zelda_data')
-os.mkdir(zelda_folder)
+input_data_folder = Path(input_data_folder)
+input_data_folder.mkdir(exist_ok=True, parents=True)
+output_data_folder = Path(output_data_folder)
+output_data_folder.mkdir(exist_ok=True, parents=True)
 
 # to get up-to-date annotations we use the wikipedia-api
 wiki_wiki = wikipediaapi.Wikipedia(language="en")
@@ -31,7 +35,7 @@ number_valid_titles_with_new_name_in_current_wiki = 0
 # get all wikipedia titles from the dataset
 set_of_all_wikipedia_titles_in_cweb = set()
 tree = ET.parse(
-    os.path.join(data_folder, 'wikipedia.xml'))
+    os.path.join(input_data_folder, 'wikipedia.xml'))
 root = tree.getroot()
 for doc in root:
     for annotation in doc:
@@ -54,27 +58,28 @@ for original_wikiname in set_of_all_wikipedia_titles_in_cweb:
 
         if title != original_wikiname:
             print(f'Title changed: Old title {original_wikiname} New title: {title}')
-            number_valid_titles_with_new_name_in_current_wiki+=1
+            number_valid_titles_with_new_name_in_current_wiki += 1
 
         original_names_to_ids[original_wikiname] = wikiid
         wikiids_to_up_to_date_names[wikiid] = title
     else:
         print(f'--->Wikipedia page name {original_wikiname} Does not exist. Ignore.')
-        number_invalid_titles+=1
+        number_invalid_titles += 1
 
-print(f'Number of entities: {len(original_names_to_ids) + number_invalid_titles} from which {number_invalid_titles} are invalid')
-print(f'Of the {len(original_names_to_ids)} this is the number of them that changed over time: {number_valid_titles_with_new_name_in_current_wiki}')
+print(
+    f'Number of entities: {len(original_names_to_ids) + number_invalid_titles} from which {number_invalid_titles} are invalid')
+print(
+    f'Of the {len(original_names_to_ids)} this is the number of them that changed over time: {number_valid_titles_with_new_name_in_current_wiki}')
 
 # save the dictionaries
 with open(
-        os.path.join(zelda_folder,'wikiids_to_titles_wikipedia.pickle'),
+        os.path.join(output_data_folder, 'wikiids_to_titles_wikipedia.pickle'),
         'wb') as handle:
     pickle.dump(wikiids_to_up_to_date_names, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-
 # get the brackets
 document_names_to_brackets = {}
-with open(os.path.join(data_folder, 'wikipedia-name2bracket.tsv'), mode='r', encoding='utf-8') as nameToBrackets:
+with open(os.path.join(input_data_folder, 'wikipedia-name2bracket.tsv'), mode='r', encoding='utf-8') as nameToBrackets:
     lines = nameToBrackets.readlines()
     for line in lines:
         line_list = line.strip().split('\t')
@@ -85,7 +90,7 @@ with open(os.path.join(data_folder, 'wikipedia-name2bracket.tsv'), mode='r', enc
 # 1. go through the xml annotations file
 docnames_and_annotations = {}
 tree = ET.parse(
-        os.path.join(data_folder, 'wikipedia.xml'))
+    os.path.join(input_data_folder, 'wikipedia.xml'))
 root = tree.getroot()
 for doc in root:
     docnames_and_annotations[doc.attrib['docName']] = []
@@ -109,11 +114,10 @@ for doc in root:
             # save tuple (start, end, id, title)
             docnames_and_annotations[doc.attrib['docName']].append((start, end, wikiid, title))
 
-
 # first the conll file
 current_doc_name = ''
-with open(os.path.join(data_folder,'wikipedia.conll'), mode='r', encoding='utf-8') as cweb_original, open(os.path.join(zelda_folder, 'wikipedia_final.conll'), mode='w', encoding='utf-8') as out_file:
-
+with open(os.path.join(input_data_folder, 'wikipedia.conll'), mode='r', encoding='utf-8') as cweb_original, \
+        open(os.path.join(output_data_folder, 'test_wned-wiki.conll'), mode='w', encoding='utf-8') as out_file:
     lines = cweb_original.readlines()
 
     for line in lines:
@@ -127,7 +131,7 @@ with open(os.path.join(data_folder,'wikipedia.conll'), mode='r', encoding='utf-8
             try:
                 bracket = document_names_to_brackets[
                     current_doc_name]
-            except KeyError: # some documents without annotation do not have brackets
+            except KeyError:  # some documents without annotation do not have brackets
                 bracket = 'No bracket provided'
             out_file.write('# ' + current_doc_name + '\t' + bracket + '\n')
 
@@ -137,9 +141,9 @@ with open(os.path.join(data_folder,'wikipedia.conll'), mode='r', encoding='utf-8
             line_list = line.split('\t')
 
             if len(line_list) == 1:
-                out_file.write(line.strip() + '\tO\tO\n' )
+                out_file.write(line.strip() + '\tO\tO\n')
 
-            else: # token with annotation
+            else:  # token with annotation
                 token = line_list[0]
                 bio_tag = line_list[1]
 
@@ -150,16 +154,15 @@ with open(os.path.join(data_folder,'wikipedia.conll'), mode='r', encoding='utf-8
                     title = wikiids_to_up_to_date_names[wikiid]
                     out_file.write(
                         token + '\t' + bio_tag + '-' + str(wikiid) + '\t' + bio_tag + '-' +
-                        title + '\n')
+                        title.replace(' ', '_') + '\n')
                 else:
                     print(f'Invalid Name in conll file: {original_wikiname}')
                     out_file.write(token + '\tO\tO\n')
 
 # next we create the jsonl file
 # write the jsonl file
-with open(os.path.join(zelda_folder, 'wikipedia_final.jsonl'), mode='w', encoding='utf-8') as jsonl_out:
-
-    raw_text_folder = os.path.join(data_folder, 'RawText')
+with open(os.path.join(output_data_folder, 'test_wned-wiki.jsonl'), mode='w', encoding='utf-8') as jsonl_out:
+    raw_text_folder = os.path.join(input_data_folder, 'RawText')
 
     for filename in os.listdir(raw_text_folder):
         # some files do not seem to have an annotation
@@ -169,14 +172,14 @@ with open(os.path.join(zelda_folder, 'wikipedia_final.jsonl'), mode='w', encodin
         bracket = document_names_to_brackets[
             filename]
 
-        file_dict = {'id':filename, 'bracket': bracket}
+        file_dict = {'id': filename, 'bracket': bracket}
         with open(os.path.join(raw_text_folder, filename), encoding='utf-8') as doc_input:
             file_dict['text'] = doc_input.read()
         file_dict['index'] = []
         file_dict['wikipedia_ids'] = []
         file_dict['wikipedia_titles'] = []
         for start, end, wikiid, title in docnames_and_annotations[filename]:
-            file_dict['index'].append([start,end])
+            file_dict['index'].append([start, end])
             file_dict['wikipedia_ids'].append(wikiid)
             file_dict['wikipedia_titles'].append(title)
         json.dump(file_dict, jsonl_out)

@@ -1,6 +1,7 @@
 # this script is to process the tweeki gold dataset
 # the dataset is from the paper 'Tweeki: Linking Named Entities on Twitter to a Knowledge Graph' (https://aclanthology.org/2020.wnut-1.29.pdf)
 # and can be downloaded here: https://ucinlp.github.io/tweeki/
+from pathlib import Path
 
 import wikipediaapi
 from qwikidata.linked_data_interface import get_entity_dict_from_api
@@ -16,10 +17,14 @@ annotations_to_wikipedia_ids = {}  # keep track of the annotations we already sa
 # Note: The text in the json file provided by the creators is just the tokens of the conll-file joined with blanks. So e.g. there is blanks between the last word of a sentence and the ending '.', etc.
 
 # path to Tweeki_gold folder that contains the Tweeki_gold and Tweeki_gokd.jsonl
-data_folder=''
+input_data_folder = '../../local_data'
+output_data_folder = '../../zelda_data'
 
-zelda_folder = os.path.join(data_folder, 'zelda_data')
-os.mkdir(zelda_folder)
+input_data_folder = Path(input_data_folder)
+input_data_folder.mkdir(exist_ok=True, parents=True)
+output_data_folder = Path(output_data_folder)
+output_data_folder.mkdir(exist_ok=True, parents=True)
+
 
 # First thing we do is to process the annotations, annotations come in the form 'wikipedia_page_title|wikidata_q_id'
 # What we want is wikipedia title and wikipedia id (both up-to-date)
@@ -63,8 +68,7 @@ def get_up_to_date_wiki_title_and_id_from_tweeki_annotation(annotation: str):
 
 
 # open the tweeki conll file and get all the annotations
-with open(os.path.join(data_folder, 'Tweeki_gold'), mode='r',
-          encoding='utf-8') as tweeki_conll:
+with open(input_data_folder / 'Tweeki_gold' / 'Tweeki_gold', mode='r', encoding='utf-8') as tweeki_conll:
     set_of_annotations = set()
     for line in tweeki_conll:
         if not line.startswith('#') and not line == '\n':
@@ -84,16 +88,16 @@ with open(os.path.join(data_folder, 'Tweeki_gold'), mode='r',
 
 # save the wikipedia-ids-to-titles-dictionary
 with open(
-        os.path.join(zelda_folder, 'wikiids_to_titles_tweeki.pickle'),
+        os.path.join(output_data_folder, 'wikiids_to_titles_tweeki.pickle'),
         'wb') as handle:
     pickle.dump(wiki_ids_to_titles, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # once we have the the annotations processed, we produce the output file
-#first the conll version
-with open(os.path.join(data_folder,'Tweeki_gold'), mode='r',
+# first the conll version
+with open(input_data_folder / 'Tweeki_gold' / 'Tweeki_gold', mode='r',
           encoding='utf-8') as conll_input, open(
-        os.path.join(zelda_folder, 'tweeki_final.conll'), mode='w',
-        encoding='utf-8') as conll_output:
+    os.path.join(output_data_folder, 'test_tweeki.conll'), mode='w',
+    encoding='utf-8') as conll_output:
     for line in conll_input:
 
         if line.startswith('# tweet_id'):
@@ -124,15 +128,14 @@ with open(os.path.join(data_folder,'Tweeki_gold'), mode='r',
                     wikipedia_title = wiki_ids_to_titles[wikipedia_id]
                     conll_output.write(
                         token + '\t' + bio_tag + '-' + str(
-                            wikipedia_id) + '\t' + bio_tag + '-' + wikipedia_title + '\n')
+                            wikipedia_id) + '\t' + bio_tag + '-' + wikipedia_title.replace(' ', '_') + '\n')
                 else:
                     conll_output.write(token + '\tO\tO\n')
 
 # next, also provide the wikipedia annotations for the json file
-with open(os.path.join(data_folder, 'Tweeki_gold.jsonl'), mode='r',
-          encoding='utf-8') as json_input, open(
-        os.path.join(zelda_folder, 'tweeki_final.jsonl'), mode='w',
-        encoding='utf-8') as json_output:
+with open(input_data_folder / 'Tweeki_gold' / 'Tweeki_gold.jsonl', mode='r', encoding='utf-8') as json_input, \
+        open(os.path.join(output_data_folder, 'test_tweeki.jsonl'), mode='w',
+             encoding='utf-8') as json_output:
     for line in json_input:
         line_dict = json.loads(line)
         new_index = []

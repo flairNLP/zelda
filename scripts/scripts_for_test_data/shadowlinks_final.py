@@ -6,6 +6,8 @@ import json
 import os
 import pickle
 import time
+from pathlib import Path
+
 import requests
 import wikipediaapi
 
@@ -24,15 +26,18 @@ wiki_ids_to_titles = {}  # save upt-to-date wikipedia ids and corresponding page
 bad_to_good_ids = {}  # to correct erroneous ids, i.e. if the id is broken use title to get id
 
 # path to shadowlinks folder that contains the Tail.json, Shadow.json, Top.json
-data_folder=''
+input_data_folder = '../../local_data'
+output_data_folder = '../../zelda_data'
 
-zelda_folder = os.path.join(data_folder, 'zelda_data')
-os.mkdir(zelda_folder)
+input_data_folder = Path(input_data_folder)
+input_data_folder.mkdir(exist_ok=True, parents=True)
+output_data_folder = Path(output_data_folder)
+output_data_folder.mkdir(exist_ok=True, parents=True)
 
 # first get the wikipedia ids and titles
 # each example links to one unique entity
 for filename in ['Shadow', 'Tail', 'Top']:
-    with open(os.path.join(data_folder, filename + '.json'), mode='r', encoding='utf-8') as f_in:
+    with open(os.path.join(input_data_folder, filename + '.json'), mode='r', encoding='utf-8') as f_in:
         snippets = json.load(f_in)
 
         for snippet in snippets:
@@ -68,15 +73,15 @@ for filename in ['Shadow', 'Tail', 'Top']:
 
 # save the wikipedia-ids-to-titles-dictionary
 with open(
-        os.path.join(zelda_folder, 'wikiids_to_titles_shadowlinks.pickle'),
+        os.path.join(output_data_folder, 'wikiids_to_titles_shadowlinks.pickle'),
         'wb') as handle:
     pickle.dump(wiki_ids_to_titles, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-
 # first create the jsonl files
 for filename in ['Shadow', 'Tail', 'Top']:
-    with open(os.path.join(data_folder, filename + '.json'), mode='r', encoding='utf-8') as f_in, open(
-            os.path.join(zelda_folder, filename + '_final.jsonl'), mode='w', encoding='utf-8') as f_out:
+    with open(os.path.join(input_data_folder, filename + '.json'), mode='r', encoding='utf-8') as f_in, open(
+            os.path.join(output_data_folder, 'test_shadowlinks-' + filename.lower() + '.jsonl'), mode='w',
+            encoding='utf-8') as f_out:
         snippets = json.load(f_in)
         for snippet in snippets:
             # check if the annotation is correct
@@ -132,8 +137,10 @@ for filename in ['Shadow', 'Tail', 'Top']:
 
 # now the conll files
 for filename in ['Shadow', 'Tail', 'Top']:
-    with open(os.path.join(data_folder, filename + '.json'), mode='r', encoding='utf-8') as f_in, open(
-            os.path.join(zelda_folder, filename + '_final.conll'), mode='w', encoding='utf-8') as f_out:
+    with open(os.path.join(input_data_folder, filename + '.json'), mode='r',
+              encoding='utf-8') as f_in, open(
+            os.path.join(output_data_folder, 'test_shadowlinks-' + filename.lower() + '.conll'), mode='w',
+            encoding='utf-8') as f_out:
         snippets = json.load(f_in)
         for snippet in snippets:
             # check if the annotation is correct
@@ -276,10 +283,10 @@ for filename in ['Shadow', 'Tail', 'Top']:
                                                                                                              :-1].isalpha())
                 ):
                     if first:
-                        token.set_label(typename='nel', value='B-' + str(entity_id) + '\t' + 'B-' + wikiname)
+                        token.set_label(typename='nel', value='B-' + str(entity_id) + '\t' + 'B-' + wikiname.replace(' ', '_'))
                         first = False
                     else:
-                        token.set_label(typename='nel', value='I-' + str(entity_id) + '\t' + 'I-' + wikiname)
+                        token.set_label(typename='nel', value='I-' + str(entity_id) + '\t' + 'I-' + wikiname.replace(' ', '_'))
 
             # WRITE EACH EXAMPLE TO FILE
             f_out.write('-DOCSTART-\n\n')  # each example is a document in this case

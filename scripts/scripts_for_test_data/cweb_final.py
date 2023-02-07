@@ -1,6 +1,7 @@
 # script for processing the clueweb (cweb) dataset
 # data taken from here: https://github.com/lephong/mulrel-nel
 # they provide the data in conll format and raw text together with an xml file for the annotations
+from pathlib import Path
 
 # the annotations in the cweb dataset are wikipedia page titles
 # to make sure these annotations are up-to-date, we check whether the title yields a proper wikipedia page using the wikipedia-api
@@ -13,11 +14,14 @@ import xml.etree.ElementTree as ET
 import os
 import json
 
-# path to the folder that contains clueweb.xml, clueweb.conll, RawText,...
-data_folder = ''
+# path to the folder that contains clueweb.xml, clueweb.conll, RawText, clueweb-name2bracket.tsv ...
+input_data_folder = '../../local_data'
+output_data_folder = '../../zelda_data'
 
-zelda_folder = os.path.join(data_folder, 'zelda_data')
-os.mkdir(zelda_folder)
+input_data_folder = Path(input_data_folder)
+input_data_folder.mkdir(exist_ok=True, parents=True)
+output_data_folder = Path(output_data_folder)
+output_data_folder.mkdir(exist_ok=True, parents=True)
 
 # to get up-to-date annotations we use the wikipedia-api
 wiki_wiki = wikipediaapi.Wikipedia(language="en")
@@ -31,7 +35,7 @@ number_valid_titles_with_new_name_in_current_wiki = 0
 # get all wikipedia titles from the dataset
 set_of_all_wikipedia_titles_in_cweb = set()
 tree = ET.parse(
-    os.path.join(data_folder, 'clueweb.xml'))
+    os.path.join(input_data_folder, 'clueweb.xml'))
 root = tree.getroot()
 for doc in root:
     for annotation in doc:
@@ -67,14 +71,14 @@ print(f'Of the {len(original_names_to_ids)} this is the number of them that chan
 
 # save the dictionaries
 with open(
-        os.path.join(zelda_folder,'wikiids_to_titles_cweb.pickle'),
+        os.path.join(output_data_folder,'wikiids_to_titles_cweb.pickle'),
         'wb') as handle:
     pickle.dump(wikiids_to_up_to_date_names, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 # get the brackets
 document_names_to_brackets = {}
-with open(os.path.join(data_folder, 'clueweb-name2bracket.tsv'), mode='r', encoding='utf-8') as nameToBrackets:
+with open(os.path.join(input_data_folder, 'clueweb-name2bracket.tsv'), mode='r', encoding='utf-8') as nameToBrackets:
     lines = nameToBrackets.readlines()
     for line in lines:
         line_list = line.strip().split('\t')
@@ -85,7 +89,7 @@ with open(os.path.join(data_folder, 'clueweb-name2bracket.tsv'), mode='r', encod
 # 1. go through the xml annotations file
 docnames_and_annotations = {}
 tree = ET.parse(
-        os.path.join(data_folder, 'clueweb.xml'))
+        os.path.join(input_data_folder, 'clueweb.xml'))
 root = tree.getroot()
 for doc in root:
     docnames_and_annotations[doc.attrib['docName']] = []
@@ -112,7 +116,8 @@ for doc in root:
 
 # first the conll file
 current_doc_name = 'clueweb12-0501wb-06-28661'
-with open(os.path.join(data_folder,'clueweb.conll'), mode='r', encoding='utf-8') as cweb_original, open(os.path.join(zelda_folder, 'cweb_final.conll'), mode='w', encoding='utf-8') as out_file:
+with open(os.path.join(input_data_folder,'clueweb.conll'), mode='r', encoding='utf-8') as cweb_original,\
+        open(os.path.join(output_data_folder, 'test_cweb.conll'), mode='w', encoding='utf-8') as out_file:
 
     lines = cweb_original.readlines()
 
@@ -152,7 +157,7 @@ with open(os.path.join(data_folder,'clueweb.conll'), mode='r', encoding='utf-8')
                     title = wikiids_to_up_to_date_names[wikiid]
                     out_file.write(
                         token + '\t' + bio_tag + '-' + str(wikiid) + '\t' + bio_tag + '-' +
-                        title + '\n')
+                        title.replace(' ', '_') + '\n')
                 else:
                     print(f'Invalid Name in conll file: {original_wikiname}')
                     out_file.write(token + '\tO\tO\n')
@@ -160,9 +165,9 @@ with open(os.path.join(data_folder,'clueweb.conll'), mode='r', encoding='utf-8')
 # next we create the jsonl file
 
 # write the jsonl file
-with open(os.path.join(zelda_folder, 'cweb_final.jsonl'), mode='w', encoding='utf-8') as jsonl_out:
+with open(os.path.join(output_data_folder, 'test_cweb.jsonl'), mode='w', encoding='utf-8') as jsonl_out:
 
-    raw_text_folder = os.path.join(data_folder, 'RawText')
+    raw_text_folder = os.path.join(input_data_folder, 'RawText')
 
     for filename in os.listdir(raw_text_folder):
 

@@ -1,24 +1,29 @@
 # this script is to process the reddit dataset
-# data introduced in paper https://arxiv.org/abs/2101.01228 and can be downloaded here: https://zenodo.org/record/3820656#.YzP9SEzP1PY
+# data introduced in paper https://arxiv.org/abs/2101.01228 and can be downloaded here: https://zenodo.org/record/3970806#.Y9pZFhzMI5k
 
 # we have a posts and a comments file, the text is not tokenized, annotations are (in a separate file) in the form (start, end) and wikipedia titles
 import json
+from pathlib import Path
 
 from flair.tokenization import SpacyTokenizer
 from flair.data import Sentence
+
 tokenizer = SpacyTokenizer('en_core_web_sm')
 import pickle
 import os
 
 import wikipediaapi
+
 wiki_wiki = wikipediaapi.Wikipedia(language="en")
 
 # path to the folder that contains posts.tsv, comments.tsv, gold_post_annotations.tsv, ...
-data_folder = ''
+input_data_folder = '../../local_data'
+output_data_folder = '../../zelda_data'
 
-zelda_folder = os.path.join(data_folder, 'zelda_data')
-os.mkdir(zelda_folder)
-
+input_data_folder = Path(input_data_folder)
+input_data_folder.mkdir(exist_ok=True, parents=True)
+output_data_folder = Path(output_data_folder)
+output_data_folder.mkdir(exist_ok=True, parents=True)
 
 # first, as always, get the up-to-date wikipedia titles and ids
 original_names_to_ids = {}
@@ -26,12 +31,12 @@ wikiids_to_up_to_date_names = {}
 
 already_processed_names = set()
 for filename in ['gold_comment_annotations.tsv', 'gold_post_annotations.tsv']:
-    with open(os.path.join(data_folder, filename), mode='r', encoding='utf-8') as f_in:
+    with open(os.path.join(input_data_folder, filename), mode='r', encoding='utf-8') as f_in:
         for line in f_in:
             wikipedia_name_from_dataset = line.split('\t')[3]
 
             if not wikipedia_name_from_dataset in already_processed_names:
-                #print(f'Number of titles processed: {len(already_processed_names)}')
+                # print(f'Number of titles processed: {len(already_processed_names)}')
                 if wikipedia_name_from_dataset == '9':
                     page = wiki_wiki.page('Fahrenheit 11/9')
                 else:
@@ -45,7 +50,7 @@ for filename in ['gold_comment_annotations.tsv', 'gold_post_annotations.tsv']:
 
 # save the dictionaries
 with open(
-        os.path.join(zelda_folder, 'wikiids_to_titles_reddit.pickle'),
+        os.path.join(output_data_folder, 'wikiids_to_titles_reddit.pickle'),
         'wb') as handle:
     pickle.dump(wikiids_to_up_to_date_names, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -53,7 +58,7 @@ with open(
 posts_annotations = []
 comments_annotations = []
 for filename in ['gold_comment_annotations.tsv', 'gold_post_annotations.tsv']:
-    with open(os.path.join(data_folder, filename), mode='r', encoding='utf-8') as f_in:
+    with open(os.path.join(input_data_folder, filename), mode='r', encoding='utf-8') as f_in:
         for line in f_in:
             if filename == 'gold_comment_annotations.tsv':
                 comments_annotations.append(line.split('\t'))
@@ -62,7 +67,8 @@ for filename in ['gold_comment_annotations.tsv', 'gold_post_annotations.tsv']:
 
 # posts
 # in this file each line is one post
-with open(os.path.join(data_folder, 'posts.tsv'), mode='r', encoding='utf-8') as posts_input, open(os.path.join(zelda_folder, 'posts_final.jsonl'), mode='w', encoding='utf-8') as posts_jsonl:
+with open(os.path.join(input_data_folder, 'posts.tsv'), mode='r', encoding='utf-8') as posts_input, \
+        open(os.path.join(output_data_folder, 'test_reddit_posts.jsonl'), mode='w', encoding='utf-8') as posts_jsonl:
     for line in posts_input:
         reddit_id, subreddit, text = line.strip().split('\t')
         post_dict = {'id': reddit_id + ' ' + subreddit, 'text': text}
@@ -83,26 +89,27 @@ with open(os.path.join(data_folder, 'posts.tsv'), mode='r', encoding='utf-8') as
             post_dict['wikipedia_titles'] = wikipedia_titles
             post_dict['wikipedia_ids'] = wikipedia_ids
 
-            json.dump(post_dict,posts_jsonl)
+            json.dump(post_dict, posts_jsonl)
             posts_jsonl.write('\n')
 
 # comments
 # note that some comments span over several lines
-with open(os.path.join(data_folder, 'comments.tsv'), mode='r', encoding='utf-8') as comments_input, open(os.path.join(zelda_folder, 'comments_final.jsonl'), mode='w', encoding='utf-8') as comments_jsonl:
-
+with open(os.path.join(input_data_folder, 'comments.tsv'), mode='r', encoding='utf-8') as comments_input, \
+        open(os.path.join(output_data_folder, 'test_reddit_comments.jsonl'), mode='w',
+             encoding='utf-8') as comments_jsonl:
     line = comments_input.readline()
     comments_list = []
     id = ''
     text = ''
     while line:
         line_list = line.split('\t')
-        if len(line_list) > 1 and line_list[1].startswith('t') and line_list[1][2] == '_': # this is a new comment
+        if len(line_list) > 1 and line_list[1].startswith('t') and line_list[1][2] == '_':  # this is a new comment
             if id:
                 comments_list.append((id, text))
             # id of new comment
             id = line_list[0] + ' ' + line_list[1] + ' ' + line_list[2] + ' ' + line_list[3]
             text = line_list[4]
-        else: # line is not a new comment
+        else:  # line is not a new comment
             text += line
         line = comments_input.readline()
     comments_list.append((id, text))
@@ -131,14 +138,16 @@ with open(os.path.join(data_folder, 'comments.tsv'), mode='r', encoding='utf-8')
             comments_jsonl.write('\n')
 
 # after creating the jsonl files we also create the colmun files
-for filename in ['comments_final', 'posts_final']:
-    with open(os.path.join(zelda_folder, filename + '.jsonl'), mode='r', encoding='utf-8') as input_jsonl, open(os.path.join(zelda_folder, filename + '.conll'), mode='w', encoding='utf-8') as output_conll:
+for filename in ['test_reddit_comments', 'test_reddit_posts']:
+    with open(os.path.join(output_data_folder, filename + '.jsonl'), mode='r', encoding='utf-8') as input_jsonl, \
+            open(os.path.join(output_data_folder, filename + '.conll'), mode='w', encoding='utf-8') as output_conll:
         sentences = []
         for line in input_jsonl:
             line_dict = json.loads(line)
             tokenized_text = Sentence(line_dict['text'], use_tokenizer=tokenizer)
 
-            for index, wikipedia_title, wikipedia_id in zip(line_dict['index'], line_dict['wikipedia_titles'], line_dict['wikipedia_ids']):
+            for index, wikipedia_title, wikipedia_id in zip(line_dict['index'], line_dict['wikipedia_titles'],
+                                                            line_dict['wikipedia_ids']):
                 mention_start = index[0]
                 mention_end = index[1]
 
@@ -146,20 +155,25 @@ for filename in ['comments_final', 'posts_final']:
 
                 first = True
                 for token in tokenized_text:
-                    if (token.start_pos >= mention_start and token.end_pos <= mention_end)\
+                    if (token.start_pos >= mention_start and token.end_pos <= mention_end) \
                             or (token.start_pos >= mention_start and token.start_pos < mention_end):
 
                         if first:
-                            token.set_label(typename='nel', value='B-' + str(wikipedia_id) + '\t' + 'B-' + wikipedia_title)
+                            token.set_label(typename='nel',
+                                            value='B-' + str(wikipedia_id) + '\t' + 'B-' + wikipedia_title.replace(' ',
+                                                                                                                   '_'))
                             first = False
                         else:
-                            token.set_label(typename='nel', value='I-' + str(wikipedia_id) + '\t' + 'I-' + wikipedia_title)
+                            token.set_label(typename='nel',
+                                            value='I-' + str(wikipedia_id) + '\t' + 'I-' + wikipedia_title.replace(' ',
+                                                                                                                   '_'))
 
                 # the above annotation of tokenized sentences works pretty well!!! Actually, there is only one erronous case
                 if original_mention == 'human' and wikipedia_title == 'Human':
                     for token in tokenized_text:
                         if token.text == 'humans':
-                            token.set_label(typename='nel', value='B-' + str(wikipedia_id) + '\t' + 'B-' + wikipedia_title)
+                            token.set_label(typename='nel',
+                                            value='B-' + str(wikipedia_id) + '\t' + 'B-' + wikipedia_title)
                             break
 
             sentences.append((line_dict['id'], tokenized_text))
