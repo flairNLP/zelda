@@ -157,7 +157,7 @@ f_out.close()
 # in the following we want to create a jsonl file from the conll file
 # since there is no "whitespace after?" information for the tokens in the conll file, we just concatenate the tokens with blanks
 with open(os.path.join(output_data_folder, 'test_aida-b.conll'), mode='r', encoding='utf-8') as input_conll, open(
-        os.path.join(output_data_folder, 'aida-b_final.jsonl'), mode='w', encoding='utf-8') as output_jsonl:
+        os.path.join(output_data_folder, 'test_aida-b.jsonl'), mode='w', encoding='utf-8') as output_jsonl:
     text = ''
     id = ''
     link_indices = []

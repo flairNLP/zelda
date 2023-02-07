@@ -68,7 +68,7 @@ for filename in ['gold_comment_annotations.tsv', 'gold_post_annotations.tsv']:
 # posts
 # in this file each line is one post
 with open(os.path.join(input_data_folder, 'posts.tsv'), mode='r', encoding='utf-8') as posts_input, \
-        open(os.path.join(output_data_folder, 'test_reddit_posts.jsonl'), mode='w', encoding='utf-8') as posts_jsonl:
+        open(os.path.join(output_data_folder, 'test_reddit-posts.jsonl'), mode='w', encoding='utf-8') as posts_jsonl:
     for line in posts_input:
         reddit_id, subreddit, text = line.strip().split('\t')
         post_dict = {'id': reddit_id + ' ' + subreddit, 'text': text}
@@ -95,7 +95,7 @@ with open(os.path.join(input_data_folder, 'posts.tsv'), mode='r', encoding='utf-
 # comments
 # note that some comments span over several lines
 with open(os.path.join(input_data_folder, 'comments.tsv'), mode='r', encoding='utf-8') as comments_input, \
-        open(os.path.join(output_data_folder, 'test_reddit_comments.jsonl'), mode='w',
+        open(os.path.join(output_data_folder, 'test_reddit-comments.jsonl'), mode='w',
              encoding='utf-8') as comments_jsonl:
     line = comments_input.readline()
     comments_list = []
@@ -138,7 +138,7 @@ with open(os.path.join(input_data_folder, 'comments.tsv'), mode='r', encoding='u
             comments_jsonl.write('\n')
 
 # after creating the jsonl files we also create the colmun files
-for filename in ['test_reddit_comments', 'test_reddit_posts']:
+for filename in ['test_reddit-comments', 'test_reddit-posts']:
     with open(os.path.join(output_data_folder, filename + '.jsonl'), mode='r', encoding='utf-8') as input_jsonl, \
             open(os.path.join(output_data_folder, filename + '.conll'), mode='w', encoding='utf-8') as output_conll:
         sentences = []
