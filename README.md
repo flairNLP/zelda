@@ -58,7 +58,7 @@ IN	O	O
 ## JSONL-Format
 
 In the **jsonl** files each document is in the form of a dictionary with keys 'id', 'text', 'index', 'wikipedia_titles' and 'wikipedia_ids'.
-```
+```python
 import json
 
 input_jsonl = open('test_data/jsonl/aida-b_final.jsonl', mode='r', encoding='utf-8')
