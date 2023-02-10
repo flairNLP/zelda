@@ -2,7 +2,7 @@
 
 ZELDA is a comprehensive benchmark for entity disambiguation (ED). You can use it to train and evaluate ED models.
 
-Download ZELDA as one big zip file [here]([https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_train.json](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_full.zip). Inside, you'll find this structure:
+Download ZELDA as one big zip file [here](https://nlp.informatik.hu-berlin.de/resources/datasets/zelda/zelda_full.zip). Inside, you'll find this structure:
 
 ```console
 ZELDA
