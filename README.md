@@ -113,4 +113,6 @@ Please refer to our paper for information on how the benchmark was constructed:
 }
 ```
 
+# More Info
 
+Next to our paper, more information on the scripts used to create this dataset is found [here](SCRIPTS.md).
