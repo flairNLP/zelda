@@ -27,10 +27,12 @@ ZELDA
 
 The `train_data` folder contains the training split (use either conll or jsonl version). The `test_data` folder contains all 9 evaluation splits in both formats. The `other` folder contains entity descriptions and candidate lists.
 
-You should train your model using ZELDA train and evaluate with all splits. The macro-averaged accuracy over all splits is your final evaluation number.
-
 
 # How to Load
+
+You should train your model using ZELDA train and evaluate with all 9 test splits. The macro-averaged accuracy over all splits is your final evaluation number. 
+
+This section shows different ways to load the data for training and testing.
 
 ## Load with Flair
 
