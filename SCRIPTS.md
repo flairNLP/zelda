@@ -172,10 +172,10 @@ Wikipedia id: 9663 Wikipedia title: Electronics
 The script scripts/scripts_for_candidate_lists/demo_of_candidate_lists.py demonstrates how we used the candidate lists to achieve the numbers in our paper (add reference).
 Note that to use it you need to set the PATH_TO_REPOSITORY variable in the script. Executing it should output the following numbers.
 
-|               | AIDA-B        |TWEEKI         | REDDIT-P      |REDDIT-C       |CWEB           |WIKI           |S-TAIL         |S-SHADOW       |S-TOP          |
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| MFS           |     0,635     |   0,723       |   0,834       |    0,81       |    0,612      |     0,651     |   0,994       |    0,149      |    0,413      |
-| CL-Recall     |     0,911     |   0,94        |   0,984       |    0,983      |    0,924      |     0,988     |   0,988       |    0,567      |    0,731      |
+|               | AIDA-B |TWEEKI         | REDDIT-P | REDDIT-C | CWEB  | WIKI  | S-TAIL | S-SHADOW | S-TOP |
+| ------------- |-------| ------------- |----------|----------|-------|-------|--------|----------|------|
+| MFS           | 0,634 |   0,723       | 0,832    | 0,809    | 0,611 | 0,651 | 0,991  | 0,149    | 0,41 |
+| CL-Recall     | 0,91  |   0,94        | 0,983    | 0,981    | 0,924 | 0,986 | 0,994  | 0,565    | 0,728 |
 
 MFS ("most frequent sense") chooses, for each mention, the entity that we empirically counted the most often for that mention (assuming the mention is contained in our lists).
 CL-Recall (CL for "Candidate List") indicates whether the gold entity is actually contained in the candidate lists for all the mentions. 

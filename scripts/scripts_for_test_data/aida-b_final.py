@@ -192,6 +192,7 @@ with open(os.path.join(output_data_folder, 'test_aida-b.conll'), mode='r', encod
                 pass
             else:
                 token, wiki_id, wiki_title = line.split('\t')
+                wiki_title = wiki_title.replace('_', ' ')
                 # no annotation
                 if wiki_id == 'O':
                     text += token + ' '
